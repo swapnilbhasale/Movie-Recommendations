@@ -1,7 +1,11 @@
 import requests
 import json
 
-
+'''The Tastedive api provides recommendations for movies, music, TV shows etc.
+   The follwing function takes a argument *name*, uses the requests module to construct the URL and fetch data from the API.
+   The use the API with any erros we need to request a free API key, allowing the application th access the API
+   Given a movie input, the API return a list of similar movies, upto value *limit*
+'''
 def get_movies_from_tastedive(name):
     baseurl = "https://tastedive.com/api/similar"
     params_dict = {}
@@ -13,6 +17,9 @@ def get_movies_from_tastedive(name):
     data= tastedive_res.json()
     return data
 
+'''The OMDB API take *name* of movie as input and return data for the movie. The data includes Cast, PLot, Ratings etc.
+   As above, to access this API we need to register to get a API key.
+'''
 def get_movie_data(name): #this function returns information about the movie
     baseurl = "http://www.omdbapi.com/"
     params_dict = {}
@@ -25,13 +32,17 @@ def get_movie_data(name): #this function returns information about the movie
     data = omdb_res.json()
     return data
 
+'''This fuction takes input from value returned by the OMDB API, to return the rating value from
+   Rotten Tomatoes (if available) for a given movie'''
 def get_movie_rating(data_dict):
     list_of_rating = data_dict['Ratings']
     for src in data_dict['Ratings']:
         if src['Source'] == 'Rotten Tomatoes':
             return int(src['Value'].rstrip('%'))
     return 0
-    
+
+'''This fuction extracts a list (here length = 5) of movies returned by the Tastedive API
+'''
 def extract_movie_titles(data):
     extracted_movies = []
     for item in data['Similar']['Results']: #each item is a dictionary with keys 'Name' and 'Type'
@@ -49,6 +60,8 @@ def get_related_titles(movie_titles_list):
                 related_titles.append(m)
     return related_titles
 
+'''This function recommends high rated similar movies to users
+'''
 def get_sorted_recommendations(movies_list):
     related_titles = get_related_titles(movies_list)
     movie_rating_list = []
